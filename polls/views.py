@@ -15,18 +15,22 @@ class IndexView(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        valid_questions = set()
-        for choice in Choice.objects.all():
-            name = choice.question.question_text
-            valid_questions.add(name)
+        #valid_questions = set()
+        #for choice in Choice.objects.all():
+        #    name = choice.question.question_text
+        #    valid_questions.add(name)
 
-        return Question.objects.filter(
-            question_text__in = valid_questions, pub_date__lte=timezone.now()
+        valid_questions = set(Choice.objects.values_list('question_id', flat = True))
+
+        print(valid_questions)
+
+        return Question.objects.all().filter(
+            id__in = valid_questions, pub_date__lte=timezone.now()
         ).order_by('-pub_date')[:5]
 
 
 class DetailView(generic.DetailView):
-    model = Question
+    #model = Question
     template_name = 'polls/detail.html'
 
     def get_queryset(self):
